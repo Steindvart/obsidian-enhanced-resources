@@ -1,11 +1,11 @@
 {
-	"id": "sample-plugin",
-	"name": "Sample Plugin",
-	"version": "1.0.0",
+	"id": "obsidian-enhanced-resources",
+	"name": "Obsidian Enhanced Resources",
+	"version": "0.0.1",
 	"minAppVersion": "0.15.0",
-	"description": "Demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
+	"description": "Integration of improved work with images, videos, documents and other resources into Obsidian.",
+	"author": "Ivan Kalashnikov",
+	"authorUrl": "https://github.com/Steindvart",
+	"fundingUrl": "",
 	"isDesktopOnly": false
 }
