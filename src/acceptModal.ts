@@ -2,7 +2,7 @@ import { App, Modal, ButtonComponent } from "obsidian";
 
 export class AcceptModal extends Modal {
   private text: string
-  private onAccept: () => void;
+  public onAccept: () => void;
 
   constructor(app: App, text: string, onAccept: () => void) {
     super(app);
