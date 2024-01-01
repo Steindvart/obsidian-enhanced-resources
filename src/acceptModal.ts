@@ -1,8 +1,8 @@
 import { App, Modal, ButtonComponent } from "obsidian";
 
 export class AcceptModal extends Modal {
-  text: string
-  onAccept: () => void;
+  private text: string
+  private onAccept: () => void;
 
   constructor(app: App, text: string, onAccept: () => void) {
     super(app);
@@ -10,7 +10,7 @@ export class AcceptModal extends Modal {
     this.onAccept = onAccept;
   }
 
-  onOpen() {
+  public onOpen() {
     const { contentEl } = this;
     contentEl.setText(this.text);
 
@@ -28,7 +28,7 @@ export class AcceptModal extends Modal {
       });
   }
 
-  onClose() {
+  public onClose() {
     let { contentEl } = this;
     contentEl.empty();
   }

@@ -12,15 +12,15 @@ export const DEFAULT_SETTINGS: EnhancedResourcesPluginSettings = {
 }
 
 export class EnhancedResourcesSettingTab extends PluginSettingTab {
-	plugin: EnhancedResourcesPlugin;
+	private plugin: EnhancedResourcesPlugin;
 
 	constructor(app: App, plugin: EnhancedResourcesPlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}
 
-	display(): void {
-		const {containerEl} = this;  // #EDU, Alternative: const containerEl = this.containerEl;
+	public display(): void {
+		const {containerEl} = this;
 
 		containerEl.empty();
 
@@ -39,7 +39,7 @@ export class EnhancedResourcesSettingTab extends PluginSettingTab {
 		restoreDefButton.setButtonText("Restore default settings").setWarning();
 		restoreDefButton.onClick(async (evt: MouseEvent) => {
 			new AcceptModal(this.app, "Restore default settings?", async () => {
-				await this.plugin.restoreDefSettings();
+				await this.plugin.restoreDefaultSettings();
 				this.display()
 			}).open();
 		});
