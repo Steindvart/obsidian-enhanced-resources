@@ -5,7 +5,7 @@ import { DEFAULT_SETTINGS, EnhancedResourcesPluginSettings,
 
 import { ResourcesView } from './resourcesView';
 
-const PLUGIN_NAME: string = "Obisdian Enhanced Resources";
+const PLUGIN_NAME: string = "Enhanced Resources";
 
 export default class EnhancedResourcesPlugin extends Plugin {
 	/* Properties */
