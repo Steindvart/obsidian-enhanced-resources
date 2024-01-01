@@ -23,16 +23,17 @@ export class EnhancedResourcesSettingTab extends PluginSettingTab {
 		const {containerEl} = this;
 
 		containerEl.empty();
+		let settings = this.plugin.getSettings();
 
 		const filePathSetting = new Setting(containerEl);
 		filePathSetting.setName('Resource info file path');
 		filePathSetting.setDesc('A file that contains information about all resources')
 		filePathSetting.addText(text => text
 			.setPlaceholder('File path')
-			.setValue(this.plugin.settings.pathResInfo)
+			.setValue(settings.pathResInfo)
 			.onChange(async (value) => {
-				this.plugin.settings.pathResInfo = value;
-				await this.plugin.saveSettings();
+				settings.pathResInfo = value;
+				await this.plugin.saveSettings(settings);
 			}));
 
 		const restoreDefButton = new ButtonComponent(containerEl);
