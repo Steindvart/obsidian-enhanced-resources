@@ -4,6 +4,7 @@ import { DEFAULT_SETTINGS, EnhancedResourcesPluginSettings,
 			   EnhancedResourcesSettingTab } from './settings';
 
 import { ResourcesView } from './resourcesView';
+import { ExecFileException } from 'child_process';
 
 const PLUGIN_NAME: string = "Obisdian Enhanced Resources";
 
@@ -17,10 +18,15 @@ export default class EnhancedResourcesPlugin extends Plugin {
 	async onload() {
 		await this.loadSettings();
 
-		this.exampleRibbot = this.addRibbonIcon('dice', 'Example ribbon', (evt: MouseEvent) => {
-			let vault = this.app.vault;
-			new Notice(vault.getName());
-		});
+		this.exampleRibbot = this.addRibbonIcon('dice', 'Example ribbon',
+			async (evt: MouseEvent) => {
+				try {
+					await this.createInfoFile();
+					new Notice(`Info file ${this.settings.pathResInfo} is create`);
+				} catch (e) {
+					new Notice(`Info file ${this.settings.pathResInfo} already exist`);
+				}
+			});
 		this.exampleRibbot.addClass('example-ribbon-class');
 
 		// This adds an editor command that can perform some operation on the current editor instance
@@ -38,6 +44,7 @@ export default class EnhancedResourcesPlugin extends Plugin {
 	}
 
 	onunload() {
+
 	}
 
 	async loadSettings() {
@@ -51,5 +58,11 @@ export default class EnhancedResourcesPlugin extends Plugin {
 	async restoreDefSettings() {
 		this.settings = DEFAULT_SETTINGS;
 		await this.saveSettings();
+	}
+
+	async createInfoFile() {
+		let vault = this.app.vault;
+		let path = this.settings.pathResInfo;
+		await vault.create(path, "{}");
 	}
 }
