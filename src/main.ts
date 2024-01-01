@@ -3,7 +3,7 @@ import { Editor, MarkdownView, Notice, Plugin } from 'obsidian';
 import { DEFAULT_SETTINGS, EnhancedResourcesPluginSettings,
 			   EnhancedResourcesSettingTab } from './settings';
 
-import { ResourcesView } from './resourcesView';
+import { ResourceView, RESOURCE_VIEW_TYPE } from './resource-view';
 
 const PLUGIN_NAME: string = "Enhanced Resources";
 
@@ -11,11 +11,16 @@ export default class EnhancedResourcesPlugin extends Plugin {
 	/* Properties */
 	private settings: EnhancedResourcesPluginSettings;
 	private exampleRibbot: HTMLElement;
-	private resourcesView: ResourcesView;
+	private resourcesView: ResourceView;
 
 	/* Methods */
 	public async onload() {
 		await this.loadSettings();
+
+		this.registerView(
+      RESOURCE_VIEW_TYPE,
+      (leaf) => new ResourceView(leaf, this.settings),
+    );
 
 		this.exampleRibbot = this.addRibbonIcon('dice', 'Example ribbon',
 			async (evt: MouseEvent) => {

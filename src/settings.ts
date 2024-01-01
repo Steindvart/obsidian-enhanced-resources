@@ -1,7 +1,7 @@
 import { App, ButtonComponent, Modal, PluginSettingTab, Setting } from "obsidian";
 
 import type EnhancedResourcesPlugin from "./main";
-import { AcceptModal } from "acceptModal";
+import { AcceptModal } from "./accept-modal";
 
 export class EnhancedResourcesPluginSettings {
 	pathResInfo: string;
