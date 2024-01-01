@@ -4,7 +4,6 @@ import { DEFAULT_SETTINGS, EnhancedResourcesPluginSettings,
 			   EnhancedResourcesSettingTab } from './settings';
 
 import { ResourcesView } from './resourcesView';
-import { ExecFileException } from 'child_process';
 
 const PLUGIN_NAME: string = "Obisdian Enhanced Resources";
 
