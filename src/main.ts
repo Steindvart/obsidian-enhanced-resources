@@ -1,4 +1,4 @@
-import { Editor, MarkdownView, Vault, Notice, Plugin } from 'obsidian';
+import { Editor, MarkdownView, Notice, Plugin } from 'obsidian';
 
 import { DEFAULT_SETTINGS, EnhancedResourcesPluginSettings,
 			   EnhancedResourcesSettingTab } from './settings';
@@ -35,12 +35,9 @@ export default class EnhancedResourcesPlugin extends Plugin {
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new EnhancedResourcesSettingTab(this.app, this));
-
-		console.info("%s is load.", PLUGIN_NAME);
 	}
 
 	onunload() {
-		console.info("%s is unload.", PLUGIN_NAME);
 	}
 
 	async loadSettings() {
@@ -51,5 +48,8 @@ export default class EnhancedResourcesPlugin extends Plugin {
 		await this.saveData(this.settings);
 	}
 
-
+	async restoreDefSettings() {
+		this.settings = DEFAULT_SETTINGS;
+		await this.saveSettings();
+	}
 }
