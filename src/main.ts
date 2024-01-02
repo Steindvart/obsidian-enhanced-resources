@@ -1,4 +1,4 @@
-import { Editor, MarkdownView, Notice, Plugin } from 'obsidian';
+import { Notice, Plugin, WorkspaceLeaf } from 'obsidian';
 
 import { DEFAULT_SETTINGS, EnhancedResourcesPluginSettings,
 			   EnhancedResourcesSettingTab } from './settings';
@@ -10,19 +10,15 @@ const PLUGIN_NAME: string = "Enhanced Resources";
 export default class EnhancedResourcesPlugin extends Plugin {
 	/* Properties */
 	private settings: EnhancedResourcesPluginSettings;
-	private exampleRibbot: HTMLElement;
-	private resourcesView: ResourceView;
 
 	/* Methods */
 	public async onload() {
 		await this.loadSettings();
 
-		this.registerView(
-      RESOURCE_VIEW_TYPE,
-      (leaf) => new ResourceView(leaf, this.settings),
-    );
+		this.initializeResourceView();
+		this.initializeCommands();
 
-		this.exampleRibbot = this.addRibbonIcon('dice', 'Example ribbon',
+		this.addRibbonIcon('dice', 'Example ribbon',
 			async (evt: MouseEvent) => {
 				try {
 					await this.createInfoFile();
@@ -30,8 +26,8 @@ export default class EnhancedResourcesPlugin extends Plugin {
 				} catch (e) {
 					new Notice(`Info file ${this.settings.pathResInfo} already exist`);
 				}
-			});
-		this.exampleRibbot.addClass('example-ribbon-class');
+			})
+			.addClass('example-ribbon-class');
 
 		this.addSettingTab(new EnhancedResourcesSettingTab(this.app, this));
 		console.info(`${PLUGIN_NAME}: is load.`);
@@ -39,6 +35,32 @@ export default class EnhancedResourcesPlugin extends Plugin {
 
 	onunload() {
 		console.info(`${PLUGIN_NAME}: is unload.`);
+	}
+
+	private initializeResourceView() {
+		this.registerView(
+      RESOURCE_VIEW_TYPE,
+      (leaf) => new ResourceView(leaf, this.app, this.settings),
+    );
+
+		this.app.workspace.on("file-open", () => {
+			const resourceLeaf = this.getExistingResourceViewLeaf();
+			if (resourceLeaf !== null) {
+				resourceLeaf.view.load();
+			}
+
+			console.log("New file is open");
+		});
+	}
+
+	private initializeCommands() {
+		this.addCommand({
+			id: 'resource-info-view',
+			name: 'Open resource info view',
+			callback: () => {
+				this.toggleResourceView();
+			}
+		});
 	}
 
 	public getSettings() {
@@ -66,4 +88,27 @@ export default class EnhancedResourcesPlugin extends Plugin {
 
 		console.info(`${PLUGIN_NAME}: resources info file ${path} is created.`);
 	}
+
+	private getExistingResourceViewLeaf(): WorkspaceLeaf | null {
+		const existing = this.app.workspace.getLeavesOfType(RESOURCE_VIEW_TYPE);
+    if (existing.length == 0) {
+			return null;
+		}
+
+		return existing[0];
+	}
+
+	private readonly toggleResourceView = async (): Promise<void> => {
+		let resourceLeaf = this.getExistingResourceViewLeaf();
+		if (resourceLeaf == null) {
+			await this.app.workspace.getRightLeaf(false).setViewState({
+				type: RESOURCE_VIEW_TYPE,
+				active: true,
+			});
+
+			resourceLeaf = this.getExistingResourceViewLeaf();
+		}
+
+		if (resourceLeaf !== null) this.app.workspace.revealLeaf(resourceLeaf);
+  };
 }
