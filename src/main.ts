@@ -49,7 +49,7 @@ export default class EnhancedResourcesPlugin extends Plugin {
 				resourceLeaf.view.load();
 			}
 
-			console.log("New file is open");
+			console.info(`${PLUGIN_NAME}: file is open.`);
 		});
 	}
 
