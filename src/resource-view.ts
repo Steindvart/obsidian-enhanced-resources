@@ -1,5 +1,7 @@
 import { App, ItemView, WorkspaceLeaf, Setting, ButtonComponent } from 'obsidian';
+
 import { EnhancedResourcesPluginSettings } from './settings';
+import { AcceptModal } from './accept-modal';
 
 export const RESOURCE_VIEW_TYPE = 'resource-view-toolbar';
 
@@ -92,10 +94,13 @@ export class ResourceView extends ItemView {
 
         new ButtonComponent(infoEl)
           .setButtonText('Remove')
+          .setWarning()
           .onClick(async (evt: MouseEvent) => {
-            delete infoObj[fileDesc.filePath];
-            await this.app.vault.adapter.write(this.settings.pathResInfo, JSON.stringify(infoObj));
-            this.draw();
+            new AcceptModal(this.app, "Remove all info about resource?", async () => {
+              delete infoObj[fileDesc.filePath];
+              await this.app.vault.adapter.write(this.settings.pathResInfo, JSON.stringify(infoObj));
+              this.draw();
+            }).open();
           });
      } else {
       infoEl.createSpan('This resource not have info.')
