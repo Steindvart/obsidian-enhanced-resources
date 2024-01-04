@@ -4,11 +4,11 @@ import type EnhancedResourcesPlugin from "./main";
 import { AcceptModal } from "./accept-modal";
 
 export class EnhancedResourcesPluginSettings {
-	pathResInfo: string;
+	pathInfoSource: string;
 }
 
 export const DEFAULT_SETTINGS: EnhancedResourcesPluginSettings = {
-	pathResInfo: '.obsidian/enhanced-resources-info.json'
+	pathInfoSource: '.obsidian/enhanced-resources-info.json'
 }
 
 export class EnhancedResourcesSettingTab extends PluginSettingTab {
@@ -30,9 +30,9 @@ export class EnhancedResourcesSettingTab extends PluginSettingTab {
 		filePathSetting.setDesc('A file that contains information about all resources')
 		filePathSetting.addText(text => text
 			.setPlaceholder('File path')
-			.setValue(settings.pathResInfo)
+			.setValue(settings.pathInfoSource)
 			.onChange(async (value) => {
-				settings.pathResInfo = value;
+				settings.pathInfoSource = value;
 				await this.plugin.saveSettings(settings);
 			}));
 

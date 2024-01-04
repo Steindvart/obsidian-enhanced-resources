@@ -2,20 +2,25 @@ import { App, ItemView, WorkspaceLeaf, Setting, ButtonComponent } from 'obsidian
 
 import { EnhancedResourcesPluginSettings } from './settings';
 import { AcceptModal } from './accept-modal';
+import { InfoSource } from './info-source';
 
 export const RESOURCE_VIEW_TYPE = 'resource-view-toolbar';
 
 export class ResourceView extends ItemView {
   private readonly settings: EnhancedResourcesPluginSettings;
+  private infoSource: InfoSource;
 
-  constructor(leaf: WorkspaceLeaf, app: App, settings: EnhancedResourcesPluginSettings) {
+  constructor(leaf: WorkspaceLeaf, app: App, settings: EnhancedResourcesPluginSettings,
+              infoSource: InfoSource) {
     super(leaf);
     this.app = app;
     this.settings = settings;
+    this.infoSource = infoSource;
   }
 
   onload(): void {
-
+    const currentFilePath = this.getCurrentFilePath();
+    this.draw(currentFilePath);
   }
 
   onunload(): void {
@@ -31,7 +36,7 @@ export class ResourceView extends ItemView {
   }
 
   public getIcon(): string {
-    return 'dice';
+    return 'book-a';
   }
 
   private getCurrentFilePath(): string | undefined {
@@ -39,87 +44,75 @@ export class ResourceView extends ItemView {
     return file?.path;
   }
 
-  public load(): void {
-    super.load();
-    this.draw();
+  private drawTitle(resInfoEl: HTMLElement, text: string) {
+    resInfoEl.createSpan({ cls: 'title' })
+    .setText(text);
   }
 
-  private async draw() {
+  private async drawResInfo(resInfoEl: HTMLElement) {
+
+  }
+
+  private async draw(filePath: string | undefined) {
     const container = this.containerEl.children[1];  // #NOTE: [1] is important
     const rootEl = document.createElement('div');
 
-    const currentFilePath = this.getCurrentFilePath();
-    let fileDesc = {
-      filePath: "No file is opened",
-      isOpen: false
-    }
-    if (currentFilePath !== undefined) {
-      fileDesc.filePath = currentFilePath;
-      fileDesc.isOpen = true;
-    }
+    const resInfoEl = rootEl.createDiv();
 
-    rootEl.createDiv()
-      .createSpan({ cls: 'title' })
-      .setText(fileDesc.filePath);
+    if (filePath !== undefined) {
+      this.drawTitle(resInfoEl, filePath);
+      const resInfo = this.infoSource.getResJsonInfo(filePath);
 
-    const infoEl = rootEl.createDiv();
-
-    // #TODO: decompose
-    if (fileDesc.isOpen) {
-      const infoContent = await this.app.vault.adapter.read(this.settings.pathResInfo);
-      const infoObj = JSON.parse(infoContent);
-      const fileInfo = infoObj[fileDesc.filePath];
-      if (fileInfo !== undefined) {
-        const newFileInfo = fileInfo;
-        const keys = Object.keys(newFileInfo);
+      if (resInfo !== undefined) {
+        const keys = Object.keys(resInfo);
 
         for (const key of keys) {
-          const value = newFileInfo[key];
+          const value = resInfo[key];
 
-          new Setting(infoEl)
+          new Setting(resInfoEl)
           .setName(key)
           .addText(text => text.setValue(value)
           .onChange((value) => {
-            newFileInfo[key] = value;
+            resInfo[key] = value;
           }));
         }
 
-        new ButtonComponent(infoEl)
+        new ButtonComponent(resInfoEl)
           .setButtonText('Save')
           .onClick(async (evt: MouseEvent) => {
-            infoObj[fileDesc.filePath] = newFileInfo;
-            await this.app.vault.adapter.write(this.settings.pathResInfo, JSON.stringify(infoObj));
-            this.draw();
+            this.infoSource.setResJsonInfo(filePath, resInfo);
+            this.infoSource.saveToFile();
           });
 
-        new ButtonComponent(infoEl)
+        new ButtonComponent(resInfoEl)
           .setButtonText('Remove')
           .setWarning()
           .onClick(async (evt: MouseEvent) => {
             new AcceptModal(this.app, "Remove all info about resource?", async () => {
-              delete infoObj[fileDesc.filePath];
-              await this.app.vault.adapter.write(this.settings.pathResInfo, JSON.stringify(infoObj));
-              this.draw();
+              this.infoSource.deleteResJsonInfo(filePath);
+              this.infoSource.saveToFile();
+              // #TODO: find better way to update UI after data change
+              this.draw(filePath);
             }).open();
           });
      } else {
-      infoEl.createSpan('This resource not have info.')
+      resInfoEl.createSpan('This resource not have info.')
 
-      new ButtonComponent(infoEl)
+      new ButtonComponent(resInfoEl)
         .setButtonText('Add basic info')
         .onClick(async (evt: MouseEvent) => {
-          const newFileInfo = {
+          const basicFileInfo = {
             'comment': '',
             'tags': ''
           };
-          infoObj[fileDesc.filePath] = newFileInfo;
 
-          await this.app.vault.adapter.write(this.settings.pathResInfo, JSON.stringify(infoObj));
-          // #TODO: find better way to update UI after data change
-          this.draw();
+          this.infoSource.setResJsonInfo(filePath, basicFileInfo);
+          this.infoSource.saveToFile();
+          this.draw(filePath);
         });
     }
-
+    } else {
+      this.drawTitle(resInfoEl, 'No file is opened');
     }
 
     container.empty();
