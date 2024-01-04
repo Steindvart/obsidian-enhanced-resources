@@ -1,11 +1,11 @@
 {
 	"id": "obsidian-enhanced-resources",
 	"name": "Enhanced Resources",
-	"version": "0.0.1",
+	"version": "0.0.2, pre-alpha",
 	"minAppVersion": "0.15.0",
 	"description": "Integration of improved work with images, videos, documents and other resources into Obsidian.",
 	"author": "Ivan Kalashnikov",
 	"authorUrl": "https://github.com/Steindvart",
 	"fundingUrl": "",
-	"isDesktopOnly": false
+	"isDesktopOnly": true
 }
