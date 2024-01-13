@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-enhanced-resources",
-	"version": "0.0.1",
+	"version": "0.0.2a",
 	"description": "Integration of improved work with images, videos, documents and other resources into Obsidian.",
 	"main": "main.js",
 	"scripts": {
