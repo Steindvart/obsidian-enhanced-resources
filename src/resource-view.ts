@@ -16,6 +16,11 @@ export class ResourceView extends ItemView {
     this.app = app;
     this.settings = settings;
     this.infoSource = infoSource;
+
+		this.app.workspace.on("file-open", () => {
+      this.onload();
+      //console.info(`${PLUGIN_NAME}: resource view is reloaded.`);
+		});
   }
 
   onload(): void {

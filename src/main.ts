@@ -18,8 +18,8 @@ export default class EnhancedResourcesPlugin extends Plugin {
 		await this.loadSettings();
 
 		await this.initializeInfoSource(this.settings.pathInfoSource);
-		this.initializeResourceView();
-		this.initializeCommands();
+		this.initResourceView();
+		this.initCommands();
 
 		this.addSettingTab(new EnhancedResourcesSettingTab(this.app, this));
 		console.log(`${PLUGIN_NAME}: is load.`);
@@ -40,22 +40,14 @@ export default class EnhancedResourcesPlugin extends Plugin {
 		this.infoSource = await InfoSource.build(path, this.app.vault);
 	}
 
-	private initializeResourceView() {
+	private initResourceView() {
 		this.registerView(
       RESOURCE_VIEW_TYPE,
       (leaf) => new ResourceView(leaf, this.app, this.settings, this.infoSource)
     );
-
-		this.app.workspace.on("file-open", () => {
-			const resourceLeaf = this.getExistingResourceViewLeaf();
-			if (resourceLeaf !== null) {
-				resourceLeaf.view.onload();
-				console.info(`${PLUGIN_NAME}: resource view is reloaded.`);
-			}
-		});
 	}
 
-	private initializeCommands() {
+	private initCommands() {
 		this.addCommand({
 			id: 'resource-info-view',
 			name: 'Open resource info view',
